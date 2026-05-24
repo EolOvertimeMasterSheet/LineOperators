@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Line Operators Overtime Management Tool</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+:root{--fs:16px;--bg:#0d1117;--sur:#161c27;--sur2:#1c2535;--sur3:#222d3f;--brd:#2a3548;--brd2:#36435a;--grn:#1d9e75;--grn2:#0a3d2d;--blu:#378add;--blu2:#0c2d52;--red:#e24b4a;--red2:#4a1515;--gold:#f5c842;--gold2:#3d2a00;--txt:#e2e8f0;--txt2:#8b9ab0;--txt3:#4d5f78;--r:12px;--rs:9px;
+--wine:#8b1a4a;--wine2:#2a0515;--wine3:#5a1030}
+body.light{--bg:#f0f4f8;--sur:#fff;--sur2:#e8eef4;--sur3:#dde6f0;--brd:#c0d0e0;--brd2:#a0b8cc;--grn:#15805e;--grn2:#d0f0e4;--blu:#2563b0;--blu2:#dbeafe;--red:#c0392b;--red2:#fde8e8;--gold:#b07d00;--gold2:#fff8e1;--txt:#1a2535;--txt2:#4a5f78;--txt3:#8a9ab0;--wine:#8b1a4a;--wine2:#fce8f0;--wine3:#d06090}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{min-height:100vh;background:var(--bg);color:var(--txt);font-family:'DM Mono',monospace;font-size:var(--fs)}
+/* HEADER */
+.hdr{background:var(--sur);border-bottom:1px solid var(--brd);padding:10px 13px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:50}
+.logo-wrap{width:38px;height:38px;flex-shrink:0;background:linear-gradient(135deg,#8b1a4a,#c0392b);border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:14px;color:#fff;letter-spacing:-1px}
+.brand-main{font-family:'Syne',sans-serif;font-size:13px;font-weight:800;line-height:1.2}
+.lo{color:#c0392b}.ot2{color:#8b1a4a}
+.brand-sub{font-size:10px;color:var(--txt2);margin-top:1px}
+.hdr-r{margin-left:auto;display:flex;align-items:center;gap:6px}
+.ppill{background:var(--wine2);color:var(--wine);font-size:10px;padding:3px 9px;border-radius:20px;white-space:nowrap;border:1px solid var(--wine3)}
+/* CONTROLS */
+.ctrlbar{background:var(--sur2);border-bottom:1px solid var(--brd);padding:7px 12px;display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.fsb,.lbtn,.icobtn{background:var(--sur3);border:1px solid var(--brd2);border-radius:7px;color:var(--txt);cursor:pointer;padding:5px 10px;font-family:'Syne',sans-serif;font-weight:700;font-size:12px;-webkit-tap-highlight-color:transparent;transition:all .15s}
+.fsb.on,.lbtn.on{background:var(--wine2);border-color:var(--wine);color:var(--wine)}
+.icobtn{font-size:15px;padding:4px 9px}
+.csep{width:1px;height:20px;background:var(--brd2);flex-shrink:0}
+/* TABS */
+.tabs{display:flex;background:var(--sur);border-bottom:1px solid var(--brd);overflow-x:auto;-webkit-overflow-scrolling:touch}
+.tab{padding:11px 13px;font-size:12px;font-weight:600;color:var(--txt2);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;flex-shrink:0;font-family:'Syne',sans-serif;-webkit-tap-highlight-color:transparent}
+.tab.on{color:var(--wine);border-bottom-color:var(--wine)}
+.pg{display:none;padding:13px;max-width:960px;margin:0 auto}.pg.on{display:block}
+/* CARDS */
+.card{background:var(--sur);border:1px solid var(--brd);border-radius:var(--r);padding:13px;margin-bottom:12px}
+.sec{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;margin-bottom:11px;display:flex;align-items:center;gap:7px}
+.sec::before{content:'';width:3px;height:15px;background:var(--wine);border-radius:2px;flex-shrink:0}
+.lbl{display:block;font-size:11px;color:var(--txt2);margin-bottom:4px;letter-spacing:.3px;text-transform:uppercase}
+input,select,textarea{width:100%;padding:9px 11px;border:1px solid var(--brd2);border-radius:var(--rs);background:var(--sur2);color:var(--txt);font-size:var(--fs);font-family:'DM Mono',monospace;outline:none;transition:border-color .15s;-webkit-appearance:none}
+input:focus,select:focus{border-color:var(--wine)}
+select option{background:var(--sur2)}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:11px}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:9px;margin-bottom:11px}
+.g4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:9px;margin-bottom:11px}
+.g1{margin-bottom:11px}
+/* BUTTONS */
+.btn{padding:10px 13px;border:1px solid var(--brd2);border-radius:var(--rs);background:var(--sur2);color:var(--txt);font-size:var(--fs);cursor:pointer;display:inline-flex;align-items:center;gap:6px;font-family:'Syne',sans-serif;font-weight:700;transition:all .15s;-webkit-tap-highlight-color:transparent}
+.btn:active{transform:scale(.97)}
+.btn-g{background:var(--wine);border-color:var(--wine);color:#fff;width:100%;justify-content:center;margin-top:8px}
+.btn-gold{background:var(--gold2);border-color:var(--gold);color:var(--gold);width:100%;justify-content:center;margin-top:7px;font-weight:700}
+.btn-gold.locked{opacity:.45;cursor:not-allowed;pointer-events:none}
+.btn-gold.locked::after{content:' 🔒'}
+.btn-r{background:transparent;border-color:var(--red);color:var(--red);padding:5px 8px;font-size:12px}
+.btn-sm{padding:6px 10px;font-size:13px}
+.btn-ghost{background:transparent;border-color:var(--brd2);color:var(--txt2);padding:6px 10px;font-size:12px}
+.btn-ghost.on{border-color:var(--wine);color:var(--wine);background:var(--wine2)}
+.btn-print{background:var(--blu2);border-color:var(--blu);color:var(--blu);padding:7px 13px;font-size:12px}
+/* BADGES */
+.badge{font-size:10px;padding:2px 7px;border-radius:20px;font-weight:700;white-space:nowrap;font-family:'Syne',sans-serif}
+.bg{background:var(--grn2);color:var(--grn)}
+.bb{background:var(--blu2);color:var(--blu)}
+.br{background:var(--red2);color:var(--red)}
+.bgold{background:var(--gold2);color:var(--gold)}
+.bwine{background:var(--wine2);color:var(--wine);border:1px solid var(--wine3)}
+/* LINE BADGES */
+.line-bl1{background:#1a0a2e;color:#c084fc;border:1px solid #7a30b0}
+.line-bl2{background:#0a1e3a;color:#7ac0f0;border:1px solid #2060a0}
+.line-bl3{background:#0a2a1a;color:#7af0b0;border:1px solid #208040}
+.line-bl4{background:#2a1a0a;color:#f0c07a;border:1px solid #a06020}
+.line-bib{background:#2a0a1a;color:#f07ab0;border:1px solid #a02060}
+.line-can{background:#1a1a0a;color:#d0d07a;border:1px solid #808020}
+body.light .line-bl1{background:#f0e8ff;color:#6020c0;border-color:#b080e0}
+body.light .line-bl2{background:#e8f0ff;color:#1050b0;border-color:#70a0d0}
+body.light .line-bl3{background:#e8fff0;color:#106030;border-color:#60b080}
+body.light .line-bl4{background:#fff0e8;color:#804010;border-color:#d09060}
+body.light .line-bib{background:#ffe8f0;color:#901050;border-color:#d07090}
+body.light .line-can{background:#fffff0;color:#606010;border-color:#b0b040}
+/* SKILL BADGES */
+.sk-filler{background:#0a2a1a;color:#60e090;border:1px solid #207040;font-size:9px;padding:1px 5px;border-radius:10px;font-weight:700}
+.sk-labeller{background:#1a0a2e;color:#c084fc;border:1px solid #7a30b0;font-size:9px;padding:1px 5px;border-radius:10px;font-weight:700}
+.sk-packer{background:#2a1a0a;color:#f0a060;border:1px solid #a05020;font-size:9px;padding:1px 5px;border-radius:10px;font-weight:700}
+.sk-tl{background:#0a1e3a;color:#7ac0f0;border:1px solid #2060a0;font-size:9px;padding:1px 5px;border-radius:10px;font-weight:700}
+.sk-eng{background:#2a0a1a;color:#f07ab0;border:1px solid #a02060;font-size:9px;padding:1px 5px;border-radius:10px;font-weight:700}
+body.light .sk-filler{background:#d0f8e8;color:#106030;border-color:#60b080}
+body.light .sk-labeller{background:#f0e8ff;color:#6020c0;border-color:#b080e0}
+body.light .sk-packer{background:#fff0e0;color:#804010;border-color:#e0a060}
+body.light .sk-tl{background:#e8f0ff;color:#1050b0;border-color:#70a0d0}
+body.light .sk-eng{background:#ffe8f0;color:#901050;border-color:#d07090}
+/* SKILLS PICKER */
+.skills-picker{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:11px}
+.skill-btn{background:var(--sur3);border:1px solid var(--brd2);border-radius:6px;color:var(--txt2);cursor:pointer;padding:5px 10px;font-size:11px;font-family:'Syne',sans-serif;font-weight:700;transition:all .15s}
+.skill-btn.on{border-color:var(--wine);color:var(--wine);background:var(--wine2)}
+/* WORKER ITEMS */
+.avt{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0;font-family:'Syne',sans-serif}
+.avt-bl1{background:#1a0a2e;color:#c084fc;border:2px solid #7a30b0}
+.avt-bl2{background:#0a1e3a;color:#7ac0f0;border:2px solid #2060a0}
+.avt-bl3{background:#0a2a1a;color:#7af0b0;border:2px solid #208040}
+.avt-bl4{background:#2a1a0a;color:#f0c07a;border:2px solid #a06020}
+.avt-bib{background:#2a0a1a;color:#f07ab0;border:2px solid #a02060}
+.avt-can{background:#1a1a0a;color:#d0d07a;border:2px solid #808020}
+.avt-def{background:var(--wine2);color:var(--wine);border:2px solid var(--wine3)}
+.witem{background:var(--sur2);border:1px solid var(--brd);border-radius:var(--rs);padding:11px 12px;display:flex;align-items:center;gap:9px;margin-bottom:7px;cursor:pointer;transition:border-color .15s}
+.witem:active{border-color:var(--wine)}
+.wname{font-size:var(--fs);font-weight:700;font-family:'Syne',sans-serif}
+.wsub{font-size:11px;color:var(--txt2);margin-top:2px}
+/* SHIFT ENTRIES */
+.ent{border-radius:var(--rs);padding:10px 12px;margin-bottom:6px;border:1px solid var(--brd)}
+.ent-day{background:#1e0f0f;border-color:#5a2020}
+.ent-night{background:#0a1628;border-color:#1a3358}
+.ent-hol{background:#1a0f28;border-color:#4a2070}
+body.light .ent-day{background:#ffe8e8;border-color:#d08080}
+body.light .ent-night{background:#e8f0ff;border-color:#8090d0}
+body.light .ent-hol{background:#f0e8ff;border-color:#9060c0}
+.sday{background:#3d1a1a;color:#f09595;border:1px solid #6b2020}
+.snit{background:#0c2044;color:#85b7eb;border:1px solid #1a3d6b}
+.bhol{background:#1a0f28;color:#c084fc;border:1px solid #5a2d8b}
+body.light .sday{background:#ffe8e8;color:#c03030;border-color:#d08080}
+body.light .snit{background:#e8f0ff;color:#3060c0;border-color:#8090d0}
+body.light .bhol{background:#f0e8ff;color:#6030b0;border-color:#9060c0}
+/* DRAW */
+.wpicker{background:var(--sur2);border:1px solid var(--brd2);border-radius:var(--rs);max-height:220px;overflow-y:auto;margin-bottom:8px}
+.wpi{display:flex;align-items:center;gap:8px;padding:9px 11px;border-bottom:1px solid var(--brd);cursor:pointer}
+.wpi:last-child{border-bottom:none}
+.wpi.sel{background:var(--wine2)}
+.wpi-cb{width:18px;height:18px;border:2px solid var(--brd2);border-radius:4px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:11px;color:#fff}
+.wpi.sel .wpi-cb{background:var(--wine);border-color:var(--wine)}
+.wpi-name{font-size:var(--fs);font-family:'Syne',sans-serif;font-weight:500;flex:1}
+.wpi-cnt{font-size:11px;color:var(--txt2)}
+.draw-name{padding:10px 12px;border-radius:8px;margin-bottom:6px;font-size:var(--fs);display:flex;align-items:center;gap:8px;font-weight:700;font-family:'Syne',sans-serif;border:1px solid var(--brd)}
+.dn-spin{background:#3a3300;border-color:#7a6a00}
+.dn-win{background:#0d3d1a;border-color:#1a7a36}
+.dn-lose{background:#3d0d0d;border-color:#7a1a1a}
+.dn-num{font-size:20px;font-weight:700;min-width:38px;text-align:center;color:var(--gold);font-family:'Syne',sans-serif}
+/* REPORT */
+.scard{background:var(--sur2);border:1px solid var(--brd);border-radius:var(--rs);padding:11px;text-align:center}
+.snum{font-size:20px;font-weight:700;line-height:1;margin-bottom:3px;font-family:'Syne',sans-serif}
+.slbl{font-size:10px;color:var(--txt2);text-transform:uppercase;letter-spacing:.4px}
+/* LINE REPORT CARD */
+.line-card{border-radius:var(--r);padding:13px;margin-bottom:14px;border:2px solid var(--brd)}
+.line-card-hdr{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;margin-bottom:10px;display:flex;align-items:center;gap:10px}
+.station-row{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:7px;margin-bottom:5px;background:var(--sur2);border:1px solid var(--brd)}
+.station-lbl{font-size:11px;color:var(--txt2);width:90px;flex-shrink:0;font-family:'Syne',sans-serif;font-weight:700}
+/* SAP GRID */
+.sap-grid-wrap{overflow-x:auto;border-radius:9px;border:1px solid var(--brd);margin-top:8px}
+.sap-tbl{border-collapse:collapse;font-size:11px;min-width:100%}
+.sap-tbl th{background:var(--sur2);padding:5px 6px;border:1px solid var(--brd);font-size:9px;color:var(--txt2);text-align:center;white-space:nowrap;font-family:'Syne',sans-serif;font-weight:700;position:sticky;top:0;z-index:2}
+.sap-tbl th.name-col{position:sticky;left:0;z-index:3;background:var(--sur2);min-width:120px;text-align:left}
+.sap-tbl td{padding:4px 6px;border:1px solid var(--brd);white-space:nowrap;color:var(--txt);text-align:center;font-size:11px}
+.sap-tbl td.name-col{position:sticky;left:0;background:var(--sur);font-family:'Syne',sans-serif;font-weight:700;font-size:11px;text-align:left;z-index:1;min-width:120px}
+.sap-tbl tr:hover td{background:var(--sur3)}
+.sap-day{background:#2a0f0f;color:#f09595;font-weight:700;font-size:10px}
+.sap-night{background:#0a1628;color:#85b7eb;font-weight:700;font-size:10px}
+.sap-total{background:var(--sur3);color:var(--gold);font-weight:700;font-family:'Syne',sans-serif}
+/* PROFILE OVERLAY */
+.prof-ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:200;overflow-y:auto;padding:14px}
+.prof-ov.open{display:block}
+.prof-box{background:var(--sur);border:1px solid var(--brd2);border-radius:var(--r);max-width:600px;margin:0 auto;overflow:hidden}
+.prof-hdr{background:var(--sur2);padding:13px;display:flex;align-items:center;gap:11px;border-bottom:1px solid var(--brd)}
+.prof-body{padding:13px}
+.prof-stats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px;margin-bottom:13px}
+.pstat{background:var(--sur2);border:1px solid var(--brd);border-radius:var(--rs);padding:10px;text-align:center}
+.pstat-n{font-size:19px;font-weight:700;font-family:'Syne',sans-serif;line-height:1;margin-bottom:3px}
+.pstat-l{font-size:10px;color:var(--txt2);text-transform:uppercase;letter-spacing:.4px}
+.srow{background:var(--sur2);border-radius:var(--rs);padding:10px 12px;margin-bottom:6px;border:1px solid var(--brd)}
+.srow-day{background:#1e0f0f;border-color:#5a2020}
+.srow-night{background:#0a1628;border-color:#1a3358}
+.srow-hol{background:#1a0f28;border-color:#4a2070}
+/* WARN 60H */
+.warn-60{background:#3a1a00;border:1px solid #e05a1e;border-radius:8px;padding:8px 12px;color:#f5a060;font-size:11px;margin-bottom:5px}
+body.light .warn-60{background:#fff0e0;border-color:#c06020;color:#903010}
+/* TOAST */
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--sur);border:1px solid var(--brd2);color:var(--txt);padding:10px 20px;border-radius:40px;font-size:13px;transition:transform .3s cubic-bezier(.34,1.56,.64,1);z-index:999;white-space:nowrap;max-width:90vw;text-align:center}
+.toast.show{transform:translateX(-50%) translateY(0)}
+.empty{padding:26px 13px;text-align:center;color:var(--txt3);font-size:14px}
+.rprev{font-size:12px;color:var(--txt2);padding:9px 11px;background:var(--sur2);border-radius:9px;margin-bottom:9px;line-height:1.6;border:1px solid var(--brd)}
+.pbar{display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.pbar label{font-size:12px;color:var(--txt2);white-space:nowrap}
+.pbar select{width:auto;flex:1;min-width:150px}
+.rate-inline{display:flex;align-items:center;gap:6px;background:var(--gold2);border:1px solid var(--gold);border-radius:7px;padding:4px 9px;margin-top:4px}
+.rate-inline input{width:80px;padding:3px 7px;font-size:12px;background:transparent;border:none;border-bottom:1px solid var(--gold);color:var(--gold);font-family:'DM Mono',monospace}
+.rate-inline input:focus{outline:none}
+@media(max-width:480px){.g2{grid-template-columns:1fr}.g3{grid-template-columns:1fr 1fr}.g4{grid-template-columns:1fr 1fr}.pg{padding:10px}}
+@media print{.hdr,.ctrlbar,.tabs,.btn-r,.btn,.icobtn,.lbtn,.fsb,.pbar{display:none!important}.pg{display:block!important;padding:0;max-width:100%}.card{break-inside:avoid}.sap-grid-wrap{overflow:visible}}
+</style>
+</head>
+<body>
+<div class="hdr">
+  <div class="logo-wrap">LO</div>
+  <div style="flex:1;min-width:0">
+    <div class="brand-main"><span class="lo">Line Operators</span> <span class="ot2">Overtime</span> Management Tool</div>
+    <div class="brand-sub">Encirc · The Park — Production Lines</div>
+  </div>
+  <div class="hdr-r">
+    <div class="ppill" id="ppill">—</div>
+  </div>
+</div>
+
+<div class="ctrlbar">
+  <span style="font-size:11px;color:var(--txt2)">Font:</span>
+  <button class="fsb" style="font-size:12px" onclick="setFs(13,this)">A</button>
+  <button class="fsb on" style="font-size:15px" onclick="setFs(16,this)">A</button>
+  <button class="fsb" style="font-size:18px" onclick="setFs(19,this)">A</button>
+  <button class="fsb" style="font-size:21px" onclick="setFs(22,this)">A</button>
+  <div class="csep"></div>
+  <button class="icobtn" id="thmbtn" onclick="toggleTheme()">☀️</button>
+  <div class="csep"></div>
+  <button class="icobtn" onclick="exportData()" style="background:#0a3d2d;border:1px solid #1d9e75;color:#1d9e75;font-size:11px;padding:5px 9px">💾 Save</button>
+  <button class="icobtn" onclick="triggerImport()" style="background:#0c2d52;border:1px solid #378add;color:#378add;font-size:11px;padding:5px 9px">📂 Load</button>
+  <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(this)">
+</div>
+
+<div class="tabs">
+  <div class="tab on" onclick="showTab('w',this)">👤 Workers</div>
+  <div class="tab" onclick="showTab('s',this)">⏱ Shifts</div>
+  <div class="tab" onclick="showTab('d',this)">🎲 Draw</div>
+  <div class="tab" onclick="showTab('r',this)">📊 Report</div>
+  <div class="tab" onclick="showTab('dy',this)">📅 Daily</div>
+  <div class="tab" onclick="showTab('g',this)">🗓 Schedule</div>
+</div>
+
+<!-- WORKERS -->
+<div class="pg on" id="pg-w">
+  <div class="card">
+    <div class="sec">Add Worker</div>
+    <div class="g2">
+      <div><label class="lbl">Full Name</label><input type="text" id="wname" placeholder="e.g. John Smith"></div>
+      <div><label class="lbl">Line</label>
+        <select id="wline">
+          <option value="">— select line —</option>
+          <option value="BL1">🍷 BL1 — Bottling Line 1</option>
+          <option value="BL2">🍷 BL2 — Bottling Line 2</option>
+          <option value="BL3">🍷 BL3 — Bottling Line 3</option>
+          <option value="BL4">🍷 BL4 — Bottling Line 4</option>
+          <option value="BiB">📦 BiB — Bag in Box</option>
+          <option value="Canning">🥫 Canning</option>
+        </select>
+      </div>
+    </div>
+    <div class="g2">
+      <div><label class="lbl">💷 Hourly Rate £/h</label><input type="number" id="wrate" placeholder="e.g. 12.50" step="0.5" min="0"></div>
+      <div></div>
+    </div>
+    <label class="lbl">🎓 Skills (select all that apply)</label>
+    <div class="skills-picker" id="newWorkerSkills">
+      <button class="skill-btn" data-skill="Filler" onclick="togNewSkill(this)">Filler Operator</button>
+      <button class="skill-btn" data-skill="Labeller" onclick="togNewSkill(this)">Labeller Operator</button>
+      <button class="skill-btn" data-skill="Packer" onclick="togNewSkill(this)">Packer Operator</button>
+      <button class="skill-btn" data-skill="TeamLeader" onclick="togNewSkill(this)">Team Leader</button>
+      <button class="skill-btn" data-skill="Engineer" onclick="togNewSkill(this)">OL Engineer</button>
+    </div>
+    <button class="btn btn-g" onclick="addWorker()">+ Add Worker</button>
+  </div>
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:9px;flex-wrap:wrap;gap:7px">
+    <div class="sec" style="margin:0">Workers List</div>
+    <div style="display:flex;gap:5px;flex-wrap:wrap">
+      <button class="btn-ghost btn btn-sm on" id="sAlpha" onclick="setSort('alpha',this)">A–Z</button>
+      <button class="btn-ghost btn btn-sm" id="sShifts" onclick="setSort('shifts',this)">⏱</button>
+      <button class="btn-ghost btn btn-sm" id="sLine" onclick="setSort('line',this)">📍</button>
+    </div>
+  </div>
+  <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px">
+    <button class="btn-ghost btn btn-sm on" id="lf-ALL" onclick="setLF('ALL',this)">All</button>
+    <button class="btn-ghost btn btn-sm" id="lf-BL1" onclick="setLF('BL1',this)">BL1</button>
+    <button class="btn-ghost btn btn-sm" id="lf-BL2" onclick="setLF('BL2',this)">BL2</button>
+    <button class="btn-ghost btn btn-sm" id="lf-BL3" onclick="setLF('BL3',this)">BL3</button>
+    <button class="btn-ghost btn btn-sm" id="lf-BL4" onclick="setLF('BL4',this)">BL4</button>
+    <button class="btn-ghost btn btn-sm" id="lf-BiB" onclick="setLF('BiB',this)">BiB</button>
+    <button class="btn-ghost btn btn-sm" id="lf-Canning" onclick="setLF('Canning',this)">Canning</button>
+  </div>
+  <div id="wlist"></div>
+</div>
+
+<!-- SHIFTS -->
+<div class="pg" id="pg-s">
+  <div class="pbar"><label>Period:</label><select id="psel" onchange="renderShifts()"></select></div>
+  <div class="card">
+    <div class="sec">Add Shift</div>
+    <div class="g2">
+      <div><label class="lbl">Worker</label><select id="otwrk"></select></div>
+      <div><label class="lbl">Date</label><input type="date" id="otdate" onchange="onDateChange()"></div>
+    </div>
+    <div class="g2">
+      <div><label class="lbl">Shift</label>
+        <select id="ottype" onchange="autoTimes()">
+          <option value="day">☀ Day (7–19)</option>
+          <option value="night">☽ Night (19–7)</option>
+        </select>
+      </div>
+      <div><label class="lbl">🏖 Bank Holiday</label>
+        <div style="display:flex;align-items:center;gap:8px;padding-top:8px">
+          <input type="checkbox" id="isHol" style="width:20px;height:20px;padding:0;flex-shrink:0" onchange="prevRate()">
+          <label for="isHol" style="font-size:13px;color:var(--txt2)">Force ×2</label>
+          <span id="holAutoTag" style="display:none" class="badge bhol">AUTO</span>
+        </div>
+      </div>
+    </div>
+    <div class="g2">
+      <div><label class="lbl">Line</label>
+        <select id="otline">
+          <option value="BL1">🍷 BL1</option>
+          <option value="BL2">🍷 BL2</option>
+          <option value="BL3">🍷 BL3</option>
+          <option value="BL4">🍷 BL4</option>
+          <option value="BiB">📦 BiB</option>
+          <option value="Canning">🥫 Canning</option>
+        </select>
+      </div>
+      <div><label class="lbl">Station / Role</label>
+        <select id="otstation">
+          <option value="Filler">Filler Operator</option>
+          <option value="Labeller">Labeller Operator</option>
+          <option value="Packer">Packer Operator</option>
+          <option value="TeamLeader">Team Leader</option>
+          <option value="Engineer">OL Engineer</option>
+          <option value="General">General OT</option>
+        </select>
+      </div>
+    </div>
+    <div class="g2">
+      <div><label class="lbl">From</label><input type="time" id="otstart" value="07:00" oninput="prevRate()"></div>
+      <div><label class="lbl">To</label><input type="time" id="otend" value="19:00" oninput="prevRate()"></div>
+    </div>
+    <div class="g2">
+      <div><label class="lbl">Rate £/h (auto from worker)</label><input type="number" id="otrate" placeholder="auto" step="0.5" min="0" oninput="prevRate()"></div>
+      <div><label class="lbl">Notes</label><input type="text" id="otnote" placeholder="optional"></div>
+    </div>
+    <div class="rprev" id="rprev">Fill date and times to see rate preview.</div>
+    <button class="btn btn-g" onclick="addShift()">+ Register Shift</button>
+  </div>
+  <div class="g1"><select id="shiftFW" onchange="renderShifts()" style="font-size:13px"></select></div>
+  <div id="shiftList"></div>
+</div>
+
+<!-- DRAW -->
+<div class="pg" id="pg-d">
+  <div class="pbar"><label>Period:</label><select id="dpsel" onchange="renderWP();updDraw()"></select></div>
+  <div class="card">
+    <div class="sec">Draw Parameters</div>
+    <div class="g2">
+      <div><label class="lbl">Overtime Date</label><input type="date" id="drawDate" onchange="autoDrawTimes();drawLocked=false;updDrawBtn()"></div>
+      <div><label class="lbl">Shift</label>
+        <select id="drawType" onchange="autoDrawTimes();drawLocked=false;updDrawBtn()">
+          <option value="day">☀ Day</option>
+          <option value="night">☽ Night</option>
+        </select>
+      </div>
+    </div>
+    <div class="g3">
+      <div><label class="lbl">From</label><input type="time" id="dstart" value="07:00"></div>
+      <div><label class="lbl">To</label><input type="time" id="dend" value="19:00"></div>
+      <div><label class="lbl">Slots</label><input type="number" id="dslots" value="2" min="1" max="50"></div>
+    </div>
+    <div class="g2">
+      <div><label class="lbl">Rate £/h (optional)</label><input type="number" id="drate" placeholder="e.g. 12.50" step="0.5" min="0"></div>
+      <div><label class="lbl">Filter Line</label>
+        <select id="drawLF" onchange="renderWP()">
+          <option value="ALL">All Lines</option>
+          <option value="BL1">🍷 BL1</option>
+          <option value="BL2">🍷 BL2</option>
+          <option value="BL3">🍷 BL3</option>
+          <option value="BL4">🍷 BL4</option>
+          <option value="BiB">📦 BiB</option>
+          <option value="Canning">🥫 Canning</option>
+        </select>
+      </div>
+    </div>
+    <label class="lbl">🎓 Required Skills</label>
+    <div class="skills-picker" id="drawSkillFilter" style="margin-bottom:11px">
+      <button class="skill-btn" data-skill="Filler" onclick="togDrawSkill(this)">Filler</button>
+      <button class="skill-btn" data-skill="Labeller" onclick="togDrawSkill(this)">Labeller</button>
+      <button class="skill-btn" data-skill="Packer" onclick="togDrawSkill(this)">Packer</button>
+      <button class="skill-btn" data-skill="TeamLeader" onclick="togDrawSkill(this)">Team Leader</button>
+      <button class="skill-btn" data-skill="Engineer" onclick="togDrawSkill(this)">Engineer</button>
+    </div>
+    <label class="lbl">Select Candidates</label>
+    <div class="wpicker" id="wpicker"></div>
+    <div style="display:flex;gap:6px;margin-bottom:10px">
+      <button class="btn btn-ghost btn-sm" onclick="selAll()">All</button>
+      <button class="btn btn-ghost btn-sm" onclick="clrSel()">Clear</button>
+    </div>
+    <label class="lbl">Or type manually</label>
+    <textarea id="dnames" rows="2" placeholder="John Smith, Anna..." oninput="updDraw()" style="margin-bottom:9px"></textarea>
+    <div class="rprev" id="dinfo">Select workers above.</div>
+    <button class="btn btn-gold" id="drawBtn" onclick="startDraw()">🎲 Draw!</button>
+  </div>
+  <div id="drawRes"></div>
+</div>
+
+<!-- REPORT -->
+<div class="pg" id="pg-r">
+  <div class="pbar">
+    <label>Period:</label><select id="ssel" onchange="renderReport()"></select>
+    <button class="btn btn-print btn-sm" onclick="window.print()">🖨 Print</button>
+  </div>
+  <!-- SAP GRID -->
+  <div class="card">
+    <div class="sec">📊 Monthly Grid</div>
+    <div id="sapGridCont"></div>
+  </div>
+  <!-- LINE REPORTS -->
+  <div class="sec" style="margin-top:4px">📍 By Line</div>
+  <div id="lineReports"></div>
+</div>
+
+<!-- DAILY -->
+<div class="pg" id="pg-dy">
+  <div class="card">
+    <div class="sec">📅 Daily Overtime Report</div>
+    <div class="g2">
+      <div><label class="lbl">Date</label><input type="date" id="dailyDate" onchange="renderDaily()"></div>
+      <div><label class="lbl">Shift</label>
+        <select id="dailyShift" onchange="renderDaily()">
+          <option value="ALL">All shifts</option>
+          <option value="day">☀ Day (07:00–19:00)</option>
+          <option value="night">☽ Night (19:00–07:00)</option>
+        </select>
+      </div>
+    </div>
+    <button class="btn btn-print btn-sm" onclick="printDaily()" style="margin-bottom:8px">🖨 Print Daily Report</button>
+  </div>
+  <div id="dailyCont"></div>
+</div>
+
+<!-- SCHEDULE / 60H -->
+<div class="pg" id="pg-g">
+  <div class="card">
+    <div class="sec">Load Schedule</div>
+    <label style="border:2px dashed var(--brd2);border-radius:var(--r);padding:24px 13px;text-align:center;cursor:pointer;display:block" for="xfile">
+      <div style="font-size:28px;margin-bottom:7px">📂</div>
+      <div style="font-size:14px;font-weight:700;font-family:'Syne',sans-serif">Click to select file</div>
+      <div style="font-size:11px;color:var(--txt2);margin-top:4px">.xlsx / .xls / .csv</div>
+    </label>
+    <input type="file" id="xfile" accept=".xlsx,.xls,.csv" style="display:none" onchange="loadExcel(this)">
+    <div style="display:flex;gap:7px;margin-top:10px;flex-wrap:wrap">
+      <button class="btn btn-sm" onclick="document.getElementById('xfile').click()">📁 Choose</button>
+      <button class="btn btn-r btn-sm" onclick="clrSched()">🗑 Clear</button>
+    </div>
+    <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--brd)">
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:12px;margin-bottom:7px;color:var(--gold)">⚠️ 60h Rule Checker (Sun 07:00 → Sun 07:00)</div>
+      <div class="g2">
+        <div><label class="lbl">Check OT Date</label><input type="date" id="checkDate" onchange="check60h()"></div>
+        <div><label class="lbl">OT Shift Hours</label>
+          <select id="checkHours" onchange="check60h()">
+            <option value="12">12h shift</option>
+            <option value="6">6h shift</option>
+          </select>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;margin-bottom:11px">
+        <button class="btn btn-ghost btn-sm on" id="lim60" onclick="setLimit(60,this)">60h (standard)</button>
+        <button class="btn btn-ghost btn-sm" id="lim72" onclick="setLimit(72,this)">72h (concession)</button>
+      </div>
+      <div id="check60cont"><div class="empty" style="padding:10px">Load a schedule or add workers to check.</div></div>
+    </div>
+  </div>
+  <div id="schedcont"><div class="empty">Load Excel schedule file.</div></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- PROFILE OVERLAY -->
+<div class="prof-ov" id="profOv" onclick="closeProfEv(event)">
+  <div class="prof-box">
+    <div class="prof-hdr">
+      <div class="avt avt-def" id="profAvt" style="width:48px;height:48px;font-size:17px">XX</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-family:'Syne',sans-serif;font-size:17px;font-weight:800" id="profName">Worker</div>
+        <div style="font-size:11px;color:var(--txt2);margin-top:2px" id="profSub"></div>
+        <div id="profRateRow" class="rate-inline" style="margin-top:6px;display:inline-flex">
+          <span style="font-size:10px;color:var(--gold)">£/h:</span>
+          <input type="number" id="profRateInput" placeholder="add rate" step="0.5" min="0" onchange="saveWorkerRate()">
+          <span style="font-size:10px;color:var(--txt3)">saved</span>
+        </div>
+        <div id="profSkillsRow" style="margin-top:8px;display:flex;flex-wrap:wrap;gap:5px"></div>
+      </div>
+      <button class="btn btn-r btn-sm" onclick="closeProf()" style="margin-left:7px;flex-shrink:0">✕</button>
+    </div>
+    <div class="prof-body">
+      <div class="prof-stats" id="profStats"></div>
+      <div class="pbar" style="margin-bottom:10px">
+        <label style="font-size:12px;color:var(--txt2)">Period:</label>
+        <select id="profPSel" onchange="renderProfShifts()" style="font-size:13px;padding:7px 10px"></select>
+      </div>
+      <div id="profShifts"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+var D=JSON.parse(localStorage.getItem('lo1')||'{"w":[],"s":[]}');
+D.w.forEach(function(w){if(!w.skills)w.skills=[];if(w.rate===undefined)w.rate=0;if(!w.line)w.line='';});
+var sortMode='alpha',lf='ALL';
+var selW=new Set();
+var curProfId=null;
+var isDark=localStorage.getItem('lo_theme')!=='light';
+var drawLocked=false;
+var hourLimitVal=60;
+var drawSkillsReq=new Set();
+var newWorkerSkillsSet=new Set();
+var scheduleData=JSON.parse(localStorage.getItem('lo_sched')||'null');
+var wb=null;
+
+function save(){try{localStorage.setItem('lo1',JSON.stringify(D))}catch(e){}}
+function saveSched(){try{if(scheduleData)localStorage.setItem('lo_sched',JSON.stringify(scheduleData));else localStorage.removeItem('lo_sched')}catch(e){}}
+
+var HOL=new Set(['2025-01-01','2025-04-18','2025-04-21','2025-05-05','2025-05-26','2025-08-25','2025-12-25','2025-12-26','2026-01-01','2026-04-03','2026-04-06','2026-05-04','2026-05-25','2026-08-31','2026-12-25','2026-12-28','2027-01-01','2027-03-26','2027-03-29','2027-05-03','2027-05-31','2027-08-30','2027-12-27','2027-12-28']);
+function isHol(d){return HOL.has(d)}
+
+var ALL_SKILLS=['Filler','Labeller','Packer','TeamLeader','Engineer'];
+var SKILL_LABELS={Filler:'Filler Op.',Labeller:'Labeller Op.',Packer:'Packer Op.',TeamLeader:'Team Leader',Engineer:'OL Engineer'};
+var SKILL_CLS={Filler:'sk-filler',Labeller:'sk-labeller',Packer:'sk-packer',TeamLeader:'sk-tl',Engineer:'sk-eng'};
+var LINES=['BL1','BL2','BL3','BL4','BiB','Canning'];
+var LINE_ICONS={BL1:'🍷',BL2:'🍷',BL3:'🍷',BL4:'🍷',BiB:'📦',Canning:'🥫'};
+var LINE_SLOTS={BL1:{Filler:1,Labeller:1,Packer:1,TeamLeader:1,Engineer:1},BL2:{Filler:1,Labeller:1,Packer:1,TeamLeader:1,Engineer:1},BL3:{Filler:1,Labeller:1,Packer:1,TeamLeader:1,Engineer:1},BL4:{Filler:1,Labeller:1,Packer:1,TeamLeader:1,Engineer:1},BiB:{Packer:1,TeamLeader:1,Engineer:1},Canning:{Packer:1,TeamLeader:1,Engineer:1}};
+
+function skillBadges(skills){if(!skills||!skills.length)return'';return skills.map(function(s){return'<span class="badge '+(SKILL_CLS[s]||'bb')+'" style="font-size:9px">'+(SKILL_LABELS[s]||s)+'</span>'}).join(' ')}
+function togNewSkill(btn){var s=btn.dataset.skill;if(newWorkerSkillsSet.has(s)){newWorkerSkillsSet.delete(s);btn.classList.remove('on')}else{newWorkerSkillsSet.add(s);btn.classList.add('on')}}
+function togDrawSkill(btn){var s=btn.dataset.skill;if(drawSkillsReq.has(s)){drawSkillsReq.delete(s);btn.classList.remove('on')}else{drawSkillsReq.add(s);btn.classList.add('on')}renderWP();updDraw()}
+
+// PERIOD
+function gP(d){var dt=new Date(d),day=dt.getDate(),m=dt.getMonth(),y=dt.getFullYear();if(day>=11)return y+'-'+String(m+1).padStart(2,'0');var pm=m===0?11:m-1,py=m===0?y-1:y;return py+'-'+String(pm+1).padStart(2,'0')}
+var MEN=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+function pLbl(k){var p=k.split('-'),y=parseInt(p[0]),mi=parseInt(p[1])-1;var ni=(mi+1)%12,ny=mi===11?y+1:y;return'11 '+MEN[mi]+' '+y+' – 10 '+MEN[ni]+' '+ny}
+function allP(){var s=new Set(D.s.map(function(e){return e.period}));s.add(gP(new Date().toISOString().slice(0,10)));return Array.from(s).sort().reverse()}
+function fillPS(id){var ps=allP(),sel=document.getElementById(id),cur=sel.value;sel.innerHTML=ps.map(function(p){return'<option value="'+p+'">'+pLbl(p)+'</option>'}).join('');if(ps.indexOf(cur)>=0)sel.value=cur}
+function updatePPill(){document.getElementById('ppill').textContent=pLbl(gP(new Date().toISOString().slice(0,10)))}
+
+// HELPERS
+function inits(n){return n.split(' ').map(function(x){return x[0]||''}).join('').toUpperCase().slice(0,2)}
+function getMult(ds,ss,forceHol){if(forceHol||isHol(ds))return 2;var dt=new Date(ds+'T'+ss),dow=dt.getDay(),h=dt.getHours()+dt.getMinutes()/60;return(dow===5&&h>=19)||dow===6||dow===0||(dow===1&&h<7)?2:1.5}
+function getH(d,s,e){var a=new Date(d+'T'+s),b=new Date(d+'T'+e);if(b<=a)b.setDate(b.getDate()+1);return(b-a)/3600000}
+function avtCls(ln){if(!ln)return'avt-def';var t=ln.toLowerCase();return t==='bl1'?'avt-bl1':t==='bl2'?'avt-bl2':t==='bl3'?'avt-bl3':t==='bl4'?'avt-bl4':t==='bib'?'avt-bib':t==='canning'?'avt-can':'avt-def'}
+function lineBadgeCls(ln){if(!ln)return'bb';var t=ln.toLowerCase();return t==='bl1'?'line-bl1':t==='bl2'?'line-bl2':t==='bl3'?'line-bl3':t==='bl4'?'line-bl4':t==='bib'?'line-bib':t==='canning'?'line-can':'bb'}
+function lineIcon(ln){return LINE_ICONS[ln]||''}
+function wSIP(wid,period){return D.s.filter(function(x){return x.wid===wid&&x.period===period})}
+
+// THEME/FONT
+function applyTheme(){document.body.classList.toggle('light',!isDark);document.getElementById('thmbtn').textContent=isDark?'☀️':'🌙'}
+function toggleTheme(){isDark=!isDark;localStorage.setItem('lo_theme',isDark?'dark':'light');applyTheme()}
+function setFs(sz,btn){document.documentElement.style.setProperty('--fs',sz+'px');document.querySelectorAll('.fsb').forEach(function(b){b.classList.remove('on')});btn.classList.add('on')}
+function toast(m,d){var el=document.getElementById('toast');el.textContent=m;el.classList.add('show');clearTimeout(el._t);el._t=setTimeout(function(){el.classList.remove('show')},d||2800)}
+
+function showTab(n,el){
+  document.querySelectorAll('.pg').forEach(function(p){p.classList.remove('on')});
+  document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('on')});
+  document.getElementById('pg-'+n).classList.add('on');el.classList.add('on');
+  if(n==='s'){fillPS('psel');fillSFW();renderShifts()}
+  if(n==='d'){fillPS('dpsel');renderWP();updDraw()}
+  if(n==='r'){fillPS('ssel');renderReport()}
+  if(n==='dy'){renderDaily()}
+}
+function setSort(m,btn){sortMode=m;['sAlpha','sShifts','sLine'].forEach(function(id){var e=document.getElementById(id);if(e)e.classList.remove('on')});btn.classList.add('on');renderWorkers()}
+function setLF(f,btn){lf=f;document.querySelectorAll('[id^="lf-"]').forEach(function(b){b.classList.remove('on')});btn.classList.add('on');renderWorkers()}
+function setLimit(v,btn){hourLimitVal=v;document.getElementById('lim60').classList.toggle('on',v===60);document.getElementById('lim72').classList.toggle('on',v===72);check60h()}
+
+function sortedW(){
+  var ws=D.w.slice();
+  if(lf!=='ALL')ws=ws.filter(function(w){return w.line===lf});
+  if(sortMode==='alpha')ws.sort(function(a,b){return a.name.localeCompare(b.name)});
+  else if(sortMode==='shifts')ws.sort(function(a,b){return D.s.filter(function(e){return e.wid===b.id}).length-D.s.filter(function(e){return e.wid===a.id}).length});
+  else ws.sort(function(a,b){return(a.line||'').localeCompare(b.line||'')||a.name.localeCompare(b.name)});
+  return ws;
+}
+
+// WORKERS
+function addWorker(){
+  var n=document.getElementById('wname').value.trim(),ln=document.getElementById('wline').value;
+  var rate=parseFloat(document.getElementById('wrate').value)||0;
+  if(!n)return toast('Enter a name');
+  if(D.w.find(function(x){return x.name.toLowerCase()===n.toLowerCase()}))return toast('Worker already exists');
+  var skills=Array.from(newWorkerSkillsSet);
+  D.w.push({id:Date.now()+'',name:n,line:ln,rate:rate,skills:skills});
+  save();
+  document.getElementById('wname').value='';document.getElementById('wrate').value='';
+  newWorkerSkillsSet.clear();
+  document.querySelectorAll('#newWorkerSkills .skill-btn').forEach(function(b){b.classList.remove('on')});
+  renderWorkers();fillWS();fillSFW();renderWP();toast('Added: '+n);
+}
+function delWorker(id){if(!confirm('Delete worker and all their shifts?'))return;D.w=D.w.filter(function(x){return x.id!==id});D.s=D.s.filter(function(x){return x.wid!==id});selW.delete(id);save();renderWorkers();fillWS();fillSFW();renderShifts();renderWP();toast('Deleted')}
+function saveWorkerRate(){var w=D.w.find(function(x){return x.id===curProfId});if(!w)return;var r=parseFloat(document.getElementById('profRateInput').value)||0;w.rate=r;save();toast('Rate saved: £'+r.toFixed(2)+'/h')}
+function renderWorkers(){
+  var el=document.getElementById('wlist'),ws=sortedW();
+  if(!ws.length){el.innerHTML='<div class="empty">No workers yet.</div>';return}
+  var cp=gP(new Date().toISOString().slice(0,10));
+  el.innerHTML=ws.map(function(w){
+    var all=D.s.filter(function(e){return e.wid===w.id}),cur=all.filter(function(e){return e.period===cp});
+    var wd=cur.filter(function(e){return e.type==='day'}).length,wn=cur.filter(function(e){return e.type==='night'}).length;
+    var lb=w.line?'<span class="badge '+lineBadgeCls(w.line)+'">'+lineIcon(w.line)+' '+w.line+'</span>':'';
+    var rl=w.rate>0?'<span style="font-size:10px;color:var(--gold)">£'+w.rate.toFixed(2)+'/h</span>':'';
+    var sk=skillBadges(w.skills||[]);
+    return'<div class="witem" onclick="openProf(\''+w.id+'\')">'+
+      '<div class="avt '+avtCls(w.line)+'" style="width:38px;height:38px;font-size:13px">'+inits(w.name)+'</div>'+
+      '<div style="flex:1;min-width:0"><div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap"><span class="wname">'+w.name+'</span>'+lb+rl+'</div>'+
+      '<div class="wsub">Period: '+cur.length+' sh. · <span style="color:#f09595">☀'+wd+'</span> <span style="color:#85b7eb">☽'+wn+'</span></div>'+
+      (sk?'<div style="margin-top:4px;display:flex;gap:4px;flex-wrap:wrap">'+sk+'</div>':'')+
+      '</div><span class="badge bb" style="margin-right:5px">Σ'+all.length+'</span>'+
+      '<button class="btn btn-r" onclick="event.stopPropagation();delWorker(\''+w.id+'\')" style="padding:4px 8px;font-size:12px">🗑</button></div>';
+  }).join('');
+}
+function fillWS(){var ws=D.w.slice().sort(function(a,b){return a.name.localeCompare(b.name)});document.getElementById('otwrk').innerHTML='<option value="">— select worker —</option>'+ws.map(function(w){return'<option value="'+w.id+'">'+(w.line?lineIcon(w.line)+' ':'')+w.name+(w.rate>0?' (£'+w.rate.toFixed(2)+')':'')+'</option>'}).join('')}
+function fillSFW(){var ws=D.w.slice().sort(function(a,b){return a.name.localeCompare(b.name)});document.getElementById('shiftFW').innerHTML='<option value="ALL">All Workers</option>'+ws.map(function(w){return'<option value="'+w.id+'">'+w.name+'</option>'}).join('')}
+
+// SHIFTS
+function onDateChange(){autoTimes();var d=document.getElementById('otdate').value;var auto=isHol(d);document.getElementById('isHol').checked=auto;document.getElementById('holAutoTag').style.display=auto?'inline-flex':'none';prevRate()}
+function autoTimes(){var tp=document.getElementById('ottype').value;document.getElementById('otstart').value=tp==='day'?'07:00':'19:00';document.getElementById('otend').value=tp==='day'?'19:00':'07:00';prevRate()}
+function prevRate(){
+  var d=document.getElementById('otdate').value,s=document.getElementById('otstart').value,e=document.getElementById('otend').value;
+  var wid=document.getElementById('otwrk').value,w=D.w.find(function(x){return x.id===wid});
+  var rInp=parseFloat(document.getElementById('otrate').value);
+  var r=!isNaN(rInp)&&rInp>0?rInp:(w&&w.rate>0?w.rate:0);
+  var el=document.getElementById('rprev'),hol=document.getElementById('isHol').checked||isHol(d);
+  if(!d||!s||!e){el.textContent='Fill date and times to see rate preview.';return}
+  var m=getMult(d,s,hol),h=getH(d,s,e);
+  var mc=hol?'#c084fc':(m===2?'#85b7eb':'#5dcaa5');
+  var ml=hol?'×2.0 — Bank Holiday':(m===2?'×2.0 — weekend/night':'×1.5 — weekday');
+  var earned=r>0?(h*r*m).toFixed(2)+' £':'no rate';
+  el.innerHTML='Rate: <b style="color:'+mc+'">'+ml+'</b> · '+h.toFixed(1)+'h · Payment: <b>'+earned+'</b>';
+}
+function addShift(){
+  var wid=document.getElementById('otwrk').value,d=document.getElementById('otdate').value;
+  var s=document.getElementById('otstart').value,e=document.getElementById('otend').value;
+  var tp=document.getElementById('ottype').value;
+  var rInp=parseFloat(document.getElementById('otrate').value);
+  var w=D.w.find(function(x){return x.id===wid});
+  var r=(!isNaN(rInp)&&rInp>0)?rInp:(w&&w.rate>0?w.rate:0);
+  var note=document.getElementById('otnote').value.trim();
+  var hol=document.getElementById('isHol').checked||isHol(d);
+  var ln=document.getElementById('otline').value;
+  var station=document.getElementById('otstation').value;
+  if(!wid)return toast('Select a worker');if(!d)return toast('Enter date');
+  var mult=getMult(d,s,hol),h=getH(d,s,e),earned=r>0?h*r*mult:0,period=gP(d);
+  D.s.push({id:Date.now()+'',wid:wid,date:d,start:s,end:e,type:tp,mult:mult,rate:r,h:h,earned:earned,note:note,period:period,hol:hol,line:ln,station:station});
+  save();fillPS('psel');fillPS('ssel');fillPS('dpsel');renderShifts();renderWorkers();
+  document.getElementById('otnote').value='';document.getElementById('isHol').checked=false;document.getElementById('holAutoTag').style.display='none';
+  toast('✓ '+h.toFixed(1)+'h ×'+mult.toFixed(1)+(earned>0?' = £'+earned.toFixed(2):''));
+}
+function delShift(id){if(!confirm('Delete?'))return;D.s=D.s.filter(function(x){return x.id!==id});save();renderShifts();renderWorkers();if(curProfId)renderProfShifts();toast('Deleted')}
+function renderShifts(){
+  var period=document.getElementById('psel').value,fw=document.getElementById('shiftFW').value;
+  var entries=D.s.filter(function(e){return e.period===period&&(fw==='ALL'||e.wid===fw)}).sort(function(a,b){return b.date.localeCompare(a.date)});
+  var el=document.getElementById('shiftList');
+  if(!entries.length){el.innerHTML='<div class="empty">No shifts.</div>';return}
+  var byW={};entries.forEach(function(e){if(!byW[e.wid])byW[e.wid]=[];byW[e.wid].push(e)});
+  el.innerHTML=Object.keys(byW).map(function(wid){
+    var w=D.w.find(function(x){return x.id===wid}),wn=w?w.name:'(deleted)';
+    var we=byW[wid],wea=we.filter(function(e){return e.earned>0}).reduce(function(s,e){return s+e.earned},0);
+    var rows=we.map(function(e){
+      var isD=e.type==='day',isH=e.hol,ecls=isH?'ent-hol':(isD?'ent-day':'ent-night');
+      var bcls=isH?'bhol':(isD?'sday':'snit'),btxt=isH?'🏖 Hol':(isD?'☀ Day':'☽ Night');
+      var linebdg=e.line?'<span class="badge '+lineBadgeCls(e.line)+'" style="font-size:9px">'+lineIcon(e.line)+' '+e.line+'</span>':'';
+      var stbdg=e.station?'<span class="badge bb" style="font-size:9px">'+e.station+'</span>':'';
+      return'<div class="ent '+ecls+'"><div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap;margin-bottom:3px">'+
+        '<span style="font-weight:700;font-family:\'Syne\',sans-serif">'+e.date+'</span>'+
+        '<span class="badge '+bcls+'">'+btxt+'</span>'+
+        '<span class="badge '+(e.mult===1.5?'bg':'bb')+'">×'+e.mult.toFixed(1)+'</span>'+
+        linebdg+stbdg+
+        '<button class="btn btn-r" onclick="delShift(\''+e.id+'\')" style="margin-left:auto;padding:4px 7px;font-size:11px">🗑</button></div>'+
+        '<div style="font-size:11px;color:var(--txt2);display:flex;gap:8px;flex-wrap:wrap">'+
+        '<span>'+e.start+'–'+e.end+'</span><span>'+e.h.toFixed(1)+'h</span>'+
+        (e.rate>0?'<span style="color:var(--grn)">£'+e.earned.toFixed(2)+'</span>':'<span>no rate</span>')+
+        (e.note?'<span>📝 '+e.note+'</span>':'')+
+        '</div></div>';
+    }).join('');
+    return'<div class="card" style="padding:11px"><div style="display:flex;align-items:center;gap:7px;margin-bottom:9px">'+
+      '<div class="avt '+avtCls(w?w.line:'')+'" style="width:29px;height:29px;font-size:11px">'+inits(wn)+'</div>'+
+      '<span style="font-family:\'Syne\',sans-serif;font-weight:700;flex:1">'+wn+'</span>'+
+      '<span class="badge bg">'+we.length+' sh.</span>'+
+      (wea>0?'<span class="badge bgold" style="margin-left:4px">£'+wea.toFixed(2)+'</span>':'')+
+      '</div>'+rows+'</div>';
+  }).join('');
+}
+
+// DRAW
+function updDrawBtn(){document.getElementById('drawBtn').classList.toggle('locked',drawLocked)}
+function renderWP(){
+  var el=document.getElementById('wpicker'),period=document.getElementById('dpsel').value;
+  var dlf=document.getElementById('drawLF').value;
+  var ws=D.w.slice();
+  if(dlf!=='ALL')ws=ws.filter(function(w){return w.line===dlf});
+  if(drawSkillsReq.size>0)ws=ws.filter(function(w){var sk=w.skills||[];return Array.from(drawSkillsReq).every(function(r){return sk.indexOf(r)>=0})});
+  ws.sort(function(a,b){return a.name.localeCompare(b.name)});
+  if(!ws.length){el.innerHTML='<div class="empty" style="padding:10px">No workers match filters.</div>';return}
+  el.innerHTML=ws.map(function(w){
+    var cnt=wSIP(w.id,period).length,isSel=selW.has(w.id);
+    var sk=skillBadges(w.skills||[]);
+    return'<div class="wpi'+(isSel?' sel':'')+'\" onclick="togW(\''+w.id+'\')">'+
+      '<div class="wpi-cb">'+(isSel?'✓':'')+'</div>'+
+      '<div class="wpi-name">'+(w.line?lineIcon(w.line)+' ':'')+w.name+(sk?' <span style="margin-left:3px">'+sk+'</span>':'')+'</div>'+
+      '<div class="wpi-cnt">'+cnt+' sh.</div></div>';
+  }).join('');
+}
+function togW(id){if(selW.has(id))selW.delete(id);else selW.add(id);renderWP();updDraw()}
+function selAll(){var dlf=document.getElementById('drawLF').value;var ws=D.w.slice();if(dlf!=='ALL')ws=ws.filter(function(w){return w.line===dlf});if(drawSkillsReq.size>0)ws=ws.filter(function(w){var sk=w.skills||[];return Array.from(drawSkillsReq).every(function(r){return sk.indexOf(r)>=0})});ws.forEach(function(w){selW.add(w.id)});renderWP();updDraw()}
+function clrSel(){selW.clear();renderWP();updDraw()}
+function autoDrawTimes(){var tp=document.getElementById('drawType').value;document.getElementById('dstart').value=tp==='day'?'07:00':'19:00';document.getElementById('dend').value=tp==='day'?'19:00':'07:00';updDraw()}
+function parseN(str){return str.split(/[\n,]+/).map(function(x){return x.trim()}).filter(Boolean)}
+function getCands(){
+  var period=document.getElementById('dpsel').value;
+  var from=Array.from(selW).map(function(id){var w=D.w.find(function(x){return x.id===id});return w?{name:w.name,cnt:wSIP(id,period).length,wid:id,line:w.line,skills:w.skills||[],rate:w.rate||0}:null}).filter(Boolean);
+  var seen=new Set(from.map(function(x){return x.name.toLowerCase()}));
+  parseN(document.getElementById('dnames').value).forEach(function(name){if(!seen.has(name.toLowerCase())){var w=D.w.find(function(x){return x.name.toLowerCase()===name.toLowerCase()});from.push({name:name,cnt:w?wSIP(w.id,period).length:0,wid:w?w.id:null,line:w?w.line:'',skills:w?w.skills||[]:[],rate:w?w.rate||0:0});seen.add(name.toLowerCase())}});
+  return from;
+}
+function updDraw(){
+  var cands=getCands(),slots=parseInt(document.getElementById('dslots').value)||1,el=document.getElementById('dinfo');
+  if(!cands.length){el.textContent='Select workers above.';return}
+  var minS=Math.min.apply(null,cands.map(function(x){return x.cnt})),q=cands.filter(function(x){return x.cnt===minS});
+  el.innerHTML='Candidates: <b>'+cands.length+'</b> · Slots: <b>'+slots+'</b> · Min: <b>'+minS+'</b><br>Qualified: <b style="color:var(--grn)">'+q.length+'</b>';
+}
+var drawTO=null;
+function startDraw(){
+  if(drawLocked)return;
+  var period=document.getElementById('dpsel').value,d=document.getElementById('drawDate').value;
+  var tp=document.getElementById('drawType').value,s=document.getElementById('dstart').value,e=document.getElementById('dend').value;
+  var rate=parseFloat(document.getElementById('drate').value)||0,slots=parseInt(document.getElementById('dslots').value)||1;
+  var cands=getCands();
+  if(!d)return toast('Enter overtime date');if(!cands.length)return toast('Select workers');
+  var minS=Math.min.apply(null,cands.map(function(x){return x.cnt})),qual=cands.filter(function(x){return x.cnt===minS}),disq=cands.filter(function(x){return x.cnt>minS});
+  if(!qual.length)return toast('No qualified workers');
+  drawLocked=true;updDrawBtn();
+  qual.forEach(function(x){x.num=Math.floor(Math.random()*99)+1});qual.sort(function(a,b){return a.num-b.num});
+  var aS=Math.min(slots,qual.length),winners=qual.slice(0,aS),resEl=document.getElementById('drawRes');
+  function renderD(phase){
+    var h=getH(d,s,e),mult=getMult(d,s,isHol(d)),totalCost=0;
+    var html='<div class="card" style="padding:11px"><div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px"><div class="sec" style="margin:0">'+(phase==='spin'?'Drawing...':'Draw Results')+'</div>';
+    if(phase==='done')html+='<button class="btn btn-print btn-sm" onclick="printShiftReport()">🖨 Print</button>';
+    html+='</div>';
+    qual.concat(disq).forEach(function(item){
+      var isQ=qual.find(function(q){return q.name===item.name}),cls,label,nh;
+      if(!isQ){cls='dn-disq';label='<span class="badge" style="margin-left:auto;opacity:.5">excl.</span>';nh='<span style="min-width:38px;text-align:center;color:var(--txt3)">—</span>'}
+      else if(phase==='spin'){cls='dn-spin';label='<span class="badge bgold" style="margin-left:auto">...</span>';nh='<span class="dn-num">?</span>'}
+      else{var isW=winners.find(function(w){return w.name===item.name});cls=isW?'dn-win':'dn-lose';label=isW?'<span class="badge bg" style="margin-left:auto">✓ won</span>':'<span class="badge br" style="margin-left:auto">✗ lost</span>';nh='<span class="dn-num">'+isQ.num+'</span>'}
+      var sk=item.skills&&item.skills.length?'<span style="margin-left:4px">'+skillBadges(item.skills)+'</span>':'';
+      html+='<div class="draw-name '+cls+'">'+nh+'<span style="flex:1">'+(item.line?lineIcon(item.line)+' ':'')+item.name+sk+'</span><span style="font-size:11px;color:var(--txt2);margin-right:6px">'+item.cnt+' sh.</span>'+label+'</div>';
+    });
+    html+='</div>';
+    if(phase==='done'){
+      var reportRows=winners.map(function(w){var wr=rate>0?rate:(w.rate||0);var cost=wr>0?h*wr*mult:0;totalCost+=cost;var sk=w.skills&&w.skills.length?'<div style="margin-top:3px">'+skillBadges(w.skills)+'</div>':'';return'<div style="padding:7px 0;border-bottom:1px solid var(--brd);display:flex;align-items:center;gap:7px;flex-wrap:wrap"><span class="badge bgold">'+w.num+'</span><div style="flex:1"><b>'+w.name+'</b>'+(w.line?'<span class="badge '+lineBadgeCls(w.line)+'" style="margin-left:5px">'+lineIcon(w.line)+' '+w.line+'</span>':'')+sk+'</div>'+(cost>0?'<span style="color:var(--gold);font-weight:700">£'+cost.toFixed(2)+'</span>':'')+'</div>'}).join('');
+      html+='<div class="card" style="padding:11px;border-color:var(--wine)" id="shiftReportCard"><div class="sec" style="margin-bottom:8px">✓ Shift Report — '+d+'</div><div style="font-size:11px;color:var(--txt2);margin-bottom:8px">'+(tp==='day'?'☀ Day':'☽ Night')+' · '+s+'–'+e+' · '+h.toFixed(1)+'h · ×'+mult.toFixed(1)+'</div>'+reportRows+(totalCost>0?'<div style="margin-top:10px;padding:9px 13px;background:var(--gold2);border:1px solid var(--gold);border-radius:8px;display:flex;align-items:center;gap:10px"><span style="font-size:11px;color:var(--txt2)">Total shift cost:</span><span style="font-family:\'Syne\',sans-serif;font-size:20px;font-weight:800;color:var(--gold)">£'+totalCost.toFixed(2)+'</span></div>':'')+'</div>';
+    }
+    resEl.innerHTML=html;
+  }
+  renderD('spin');clearTimeout(drawTO);
+  drawTO=setTimeout(function(){
+    renderD('done');var mult=getMult(d,s,isHol(d)),h2=getH(d,s,e),sp=gP(d),saved=0;
+    var ln=document.getElementById('drawLF').value==='ALL'?'':document.getElementById('drawLF').value;
+    winners.forEach(function(w){if(!w.wid)return;var wr=rate>0?rate:(w.rate||0);D.s.push({id:Date.now()+Math.random()+'',wid:w.wid,date:d,start:s,end:e,type:tp,mult:mult,rate:wr,h:h2,earned:wr>0?h2*wr*mult:0,note:'Draw',period:sp,hol:isHol(d),line:ln||w.line,station:'General'});saved++});
+    if(saved>0){save();fillPS('psel');fillPS('ssel');fillPS('dpsel');renderWorkers();renderWP()}
+    toast('✓ '+saved+' shifts saved!',3500);
+  },2200);
+}
+function printShiftReport(){var el=document.getElementById('shiftReportCard');if(!el)return;var w=window.open('','_blank');w.document.write('<html><head><title>Shift Report</title></head><body style="font-family:monospace;padding:16px">'+el.outerHTML+'</body></html>');w.document.close();w.print()}
+
+// SAP GRID
+function renderSapGrid(period){
+  var p=period.split('-'),y=parseInt(p[0]),mi=parseInt(p[1])-1;
+  var startDate=new Date(y,mi,11),endDate=new Date(mi===11?y+1:y,mi===11?0:mi+1,10);
+  var days=[];var d=new Date(startDate);while(d<=endDate){days.push(d.toISOString().slice(0,10));d.setDate(d.getDate()+1)}
+  var workers=D.w.slice().sort(function(a,b){return a.name.localeCompare(b.name)});
+  var entries=D.s.filter(function(e){return e.period===period});
+  var map={};entries.forEach(function(e){if(!map[e.wid])map[e.wid]={};if(!map[e.wid][e.date])map[e.wid][e.date]=[];map[e.wid][e.date].push(e)});
+  if(!workers.length)return'<div class="empty">No workers.</div>';
+  var thHTML='<tr><th class="name-col">Name</th>'+days.map(function(d){var dd=new Date(d),dow=dd.getDay(),isWe=dow===0||dow===6,isH=isHol(d);var style=isH?'color:#c084fc':(isWe?'color:#85b7eb':'');return'<th style="'+style+'">'+dd.getDate()+'</th>'}).join('')+'<th style="color:var(--gold)">Total</th><th style="color:#85b7eb">Hrs</th></tr>';
+  var tbHTML=workers.map(function(w){
+    var tot=0,hrs=0;
+    var cells=days.map(function(date){var ss=map[w.id]&&map[w.id][date]?map[w.id][date]:[];if(!ss.length)return'<td></td>';tot+=ss.length;hrs+=ss.reduce(function(s,e){return s+e.h},0);var hasD=ss.some(function(e){return e.type==='day'}),hasN=ss.some(function(e){return e.type==='night'});var cls=hasD&&hasN?'sap-both':(hasD?'sap-day':'sap-night');return'<td class="'+cls+'">'+(ss.length>1?ss.length+'×':(hasD?'D':'N'))+'</td>'}).join('');
+    return'<tr><td class="name-col">'+w.name+(w.line?'<div><span class="badge '+lineBadgeCls(w.line)+'" style="font-size:8px">'+lineIcon(w.line)+' '+w.line+'</span></div>':'')+'</td>'+cells+'<td class="sap-total">'+tot+'</td><td class="sap-total">'+hrs.toFixed(0)+'</td></tr>';
+  }).join('');
+  return'<div style="font-size:10px;color:var(--txt3);margin-bottom:5px">D=Day · N=Night · Total=shifts · Hrs=hours</div><div class="sap-grid-wrap"><table class="sap-tbl"><thead>'+thHTML+'</thead><tbody>'+tbHTML+'</tbody></table></div>';
+}
+
+// LINE REPORT
+function renderLineReports(period){
+  var entries=D.s.filter(function(e){return e.period===period});
+  return LINES.map(function(line){
+    var le=entries.filter(function(e){return e.line===line});
+    if(!le.length)return'';
+    var lw=D.w.filter(function(w){return w.line===line});
+    var totalH=le.reduce(function(s,e){return s+e.h},0);
+    var totalCost=le.filter(function(e){return e.earned>0}).reduce(function(s,e){return s+e.earned},0);
+    var days=le.filter(function(e){return e.type==='day'}).length;
+    var nights=le.filter(function(e){return e.type==='night'}).length;
+    // Stations breakdown
+    var stations={};le.forEach(function(e){var st=e.station||'General';if(!stations[st])stations[st]={shifts:0,hrs:0,cost:0};stations[st].shifts++;stations[st].hrs+=e.h;stations[st].cost+=e.earned||0});
+    var stHTML=Object.keys(stations).map(function(st){var s=stations[st];return'<div class="station-row"><span class="station-lbl">'+st+'</span><span class="badge bb">'+s.shifts+' sh.</span><span style="font-size:11px;color:var(--txt2);margin-left:6px">'+s.hrs.toFixed(0)+'h</span>'+(s.cost>0?'<span style="font-size:11px;color:var(--gold);margin-left:6px">£'+s.cost.toFixed(2)+'</span>':'')+'</div>'}).join('');
+    // Per worker
+    var workers=[...new Set(le.map(function(e){return e.wid}))];
+    var wHTML=workers.map(function(wid){var w=D.w.find(function(x){return x.id===wid}),wn=w?w.name:'?';var we=le.filter(function(e){return e.wid===wid});var wh=we.reduce(function(s,e){return s+e.h},0),wc=we.filter(function(e){return e.earned>0}).reduce(function(s,e){return s+e.earned},0);return'<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--brd)"><div class="avt '+avtCls(line)+'" style="width:28px;height:28px;font-size:10px">'+inits(wn)+'</div><span style="flex:1;font-family:\'Syne\',sans-serif;font-weight:700;font-size:13px">'+wn+'</span><span class="badge bg">'+we.length+' sh.</span><span style="font-size:11px;color:var(--txt2);margin-left:4px">'+wh.toFixed(0)+'h</span>'+(wc>0?'<span style="color:var(--gold);font-size:11px;font-weight:700;margin-left:4px">£'+wc.toFixed(2)+'</span>':'')+'</div>'}).join('');
+    var slots=LINE_SLOTS[line]||{};var total_slots=Object.values(slots).reduce(function(s,v){return s+v},0);var filled=workers.length;
+    return'<div class="line-card" style="border-color:var(--brd)"><div class="line-card-hdr"><span style="font-size:20px">'+lineIcon(line)+'</span><span class="badge '+lineBadgeCls(line)+'" style="font-size:13px;padding:4px 12px">'+line+'</span><span style="font-size:12px;color:var(--txt2)">'+filled+'/'+total_slots+' positions</span><span class="badge bgold" style="margin-left:auto">'+le.length+' shifts</span></div>'+
+      '<div class="g3" style="margin-bottom:10px"><div class="scard"><div class="snum" style="color:#f09595">☀'+days+'</div><div class="slbl">Day</div></div><div class="scard"><div class="snum" style="color:#85b7eb">☽'+nights+'</div><div class="slbl">Night</div></div><div class="scard"><div class="snum" style="color:var(--gold)">'+(totalCost>0?'£'+totalCost.toFixed(0):'—')+'</div><div class="slbl">Cost</div></div></div>'+
+      '<div style="font-size:11px;color:var(--txt2);margin-bottom:8px">Stations:</div>'+stHTML+
+      '<div style="font-size:11px;color:var(--txt2);margin-top:10px;margin-bottom:6px">Workers:</div>'+wHTML+
+      '</div>';
+  }).join('');
+}
+
+function renderReport(){
+  var period=document.getElementById('ssel').value;
+  document.getElementById('sapGridCont').innerHTML=renderSapGrid(period);
+  var entries=D.s.filter(function(e){return e.period===period});
+  var el=document.getElementById('lineReports');
+  if(!entries.length){el.innerHTML='<div class="empty">No data for this period.</div>';return}
+  el.innerHTML=renderLineReports(period);
+}
+
+// DAILY
+function renderDaily(){
+  var date=document.getElementById('dailyDate').value,shiftF=document.getElementById('dailyShift').value;
+  var el=document.getElementById('dailyCont');
+  if(!date){el.innerHTML='<div class="empty">Select a date.</div>';return}
+  var entries=D.s.filter(function(e){return e.date===date&&(shiftF==='ALL'||e.type===shiftF)});
+  if(!entries.length){el.innerHTML='<div class="empty">No overtime recorded for '+date+'.</div>';return}
+  var totalH=entries.reduce(function(s,e){return s+e.h},0);
+  var totalCost=entries.filter(function(e){return e.earned>0}).reduce(function(s,e){return s+e.earned},0);
+  // By line
+  var byLine=LINES.map(function(line){
+    var le=entries.filter(function(e){return e.line===line||(!e.line&&line==='—')});
+    if(!le.length)return'';
+    var rows=le.map(function(e){var w=D.w.find(function(x){return x.id===e.wid}),wn=w?w.name:'?';var sk=w&&w.skills&&w.skills.length?'<span style="margin-left:4px">'+skillBadges(w.skills)+'</span>':'';return'<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--brd);flex-wrap:wrap"><div class="avt '+avtCls(line)+'" style="width:28px;height:28px;font-size:10px">'+inits(wn)+'</div><div style="flex:1"><b>'+wn+'</b>'+sk+'</div><span class="badge bb" style="font-size:9px">'+(e.station||'')+'</span><span style="font-size:11px;color:var(--txt2)">'+e.h.toFixed(0)+'h</span>'+(e.earned>0?'<span style="color:var(--gold);font-size:11px">£'+e.earned.toFixed(2)+'</span>':'')+'</div>'}).join('');
+    var lh=le.reduce(function(s,e){return s+e.h},0),lc=le.filter(function(e){return e.earned>0}).reduce(function(s,e){return s+e.earned},0);
+    return'<div class="daily-block" style="background:var(--sur2);border:1px solid var(--brd);border-radius:var(--rs);padding:10px 12px;margin-bottom:8px"><div style="font-family:\'Syne\',sans-serif;font-weight:700;font-size:13px;margin-bottom:8px;display:flex;align-items:center;gap:8px"><span>'+lineIcon(line)+'</span><span class="badge '+lineBadgeCls(line)+'">'+line+'</span><span class="badge bg" style="margin-left:auto">'+le.length+' workers</span></div>'+rows+'<div style="margin-top:8px;padding-top:6px;border-top:1px solid var(--brd);display:flex;gap:12px;font-size:11px"><span>Hours: <b style="color:var(--grn)">'+lh.toFixed(0)+'h</b></span>'+(lc>0?'<span>Cost: <b style="color:var(--gold)">£'+lc.toFixed(2)+'</b></span>':'')+'</div></div>';
+  }).join('');
+  el.innerHTML='<div class="card" style="padding:11px;border-color:var(--wine)"><div style="font-family:\'Syne\',sans-serif;font-weight:800;font-size:15px;color:var(--wine);margin-bottom:5px">📅 '+date+' — Daily OT Report</div><div style="font-size:11px;color:var(--txt2);margin-bottom:10px">'+entries.length+' workers · '+totalH.toFixed(0)+'h'+(totalCost>0?' · £'+totalCost.toFixed(2):'')+'</div>'+byLine+'</div>';
+}
+function printDaily(){var el=document.getElementById('dailyCont');if(!el.children.length)return;var w=window.open('','_blank');w.document.write('<html><head><title>Daily Report</title><style>body{font-family:monospace;font-size:13px;padding:16px}</style></head><body>'+el.innerHTML+'</body></html>');w.document.close();w.print()}
+
+// 60H CHECKER
+function getSundayWeek(dateStr){
+  var d=new Date(dateStr+'T12:00:00');
+  var dow=d.getDay();
+  d.setDate(d.getDate()-dow);
+  d.setHours(7,0,0,0);
+  return d;
+}
+function check60h(){
+  var dateStr=document.getElementById('checkDate').value;
+  var otHours=parseFloat(document.getElementById('checkHours').value)||12;
+  var el=document.getElementById('check60cont');
+  if(!dateStr){el.innerHTML='<div class="empty" style="padding:10px">Select a date to check.</div>';return}
+  if(!D.w.length){el.innerHTML='<div class="empty" style="padding:10px">No workers in the system.</div>';return}
+  var weekStart=getSundayWeek(dateStr);
+  var weekEnd=new Date(weekStart);weekEnd.setDate(weekEnd.getDate()+7);
+  var hasSchedule=scheduleData&&scheduleData.length>0;
+  var rows=D.w.slice().sort(function(a,b){return a.name.localeCompare(b.name)}).map(function(w){
+    var otH=D.s.filter(function(e){if(e.wid!==w.id)return false;var sd=new Date(e.date+'T'+e.start);return sd>=weekStart&&sd<weekEnd}).reduce(function(s,e){return s+e.h},0);
+    var schedH=getScheduleHoursInWeek(w,weekStart,weekEnd);
+    var total=otH+schedH,afterOT=total+otHours,exceeds=afterOT>hourLimitVal;
+    var detail=schedH>0?'<span style="color:var(--blu);font-size:10px"> ('+schedH+'h rota + '+otH.toFixed(0)+'h OT)</span>':(otH>0?'<span style="color:var(--txt3);font-size:10px"> ('+otH.toFixed(0)+'h OT recorded)</span>':'');
+    var cls=exceeds?'warn-60':'';
+    return'<div class="'+cls+'" style="'+(cls?'':'background:var(--sur2);border:1px solid var(--brd);border-radius:8px;padding:8px 12px;margin-bottom:5px')+'">'+(exceeds?'⚠️ ':'✅ ')+'<b>'+w.name+'</b>'+(w.line?' <span style="font-size:10px;color:var(--txt2)">'+lineIcon(w.line)+' '+w.line+'</span>':'')+' — this week: <b>'+total.toFixed(0)+'h</b>'+detail+' + '+otHours+'h OT = <b style="color:'+(exceeds?'#e05a1e':'var(--grn)')+'">'+(afterOT).toFixed(0)+'h</b>'+(exceeds?' ⛔ EXCEEDS '+hourLimitVal+'h':' ✓ OK')+'</div>';
+  }).join('');
+  var schedNote=hasSchedule?'<span style="color:var(--grn);font-size:10px">✓ Schedule loaded</span>':'<span style="color:var(--gold);font-size:10px">⚠ No schedule — only OT counted</span>';
+  el.innerHTML='<div style="font-size:11px;color:var(--txt2);margin-bottom:7px">Week: '+weekStart.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})+' 07:00 → '+weekEnd.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})+' 07:00 · Limit: '+hourLimitVal+'h · '+schedNote+'</div>'+rows;
+}
+function teamsMatch(wl,et){if(!wl||!et)return false;return wl.toLowerCase()===et.toLowerCase()}
+function getScheduleHoursInWeek(worker,weekStart,weekEnd){
+  if(!scheduleData||!scheduleData.length)return 0;
+  if(!worker.line)return 0;
+  var hrs=0;
+  scheduleData.forEach(function(teamRow){
+    if(!teamsMatch(worker.line,teamRow.team))return;
+    teamRow.entries.forEach(function(entry){
+      if(!entry.date)return;
+      var st=entry.type==='day'?'T07:00:00':'T19:00:00';
+      var dd=new Date(entry.date+st);
+      if(dd>=weekStart&&dd<weekEnd)hrs+=12;
+    });
+  });
+  return hrs;
+}
+
+// SCHEDULE
+function loadExcel(input){
+  var file=input.files[0];if(!file)return;
+  var reader=new FileReader();
+  reader.onload=function(e){
+    try{
+      wb=XLSX.read(e.target.result,{type:'binary',cellDates:true});
+      var sel=document.getElementById('sheetSelect');
+      if(sel){sel.innerHTML=wb.SheetNames.map(function(n){return'<option value="'+n+'">'+n+'</option>'}).join('');sel.value=wb.SheetNames[0]}
+      parseScheduleFor60h();
+      renderSheet();
+      toast('✓ '+file.name);
+    }catch(err){toast('File error: '+err.message)}
+  };reader.readAsBinaryString(file);
+}
+function parseScheduleFor60h(){
+  if(!wb)return;
+  var sn=wb.SheetNames[0];
+  var ws=wb.Sheets[sn];
+  var jsonRaw=XLSX.utils.sheet_to_json(ws,{header:1,defval:'',raw:true});
+  var jsonFmt=XLSX.utils.sheet_to_json(ws,{header:1,defval:'',raw:false,dateNF:'YYYY-MM-DD'});
+  var hRow=0;
+  for(var i=0;i<Math.min(jsonFmt.length,10);i++){if(jsonFmt[i].some(function(c){return String(c).toLowerCase()==='date'})){hRow=i;break}}
+  var headers=jsonFmt[hRow];
+  var dateColIdx=0;
+  for(var i=0;i<headers.length;i++){if(String(headers[i]||'').toLowerCase()==='date'){dateColIdx=i;break}}
+  var teamCols=[];
+  headers.forEach(function(h,i){if(i>1&&h&&String(h).trim()!=='')teamCols.push({idx:i,team:String(h).trim()})});
+  function parseDate(rawVal,fmtVal){
+    if(rawVal!==null&&rawVal!==undefined&&rawVal!==''){
+      var rs=String(rawVal);
+      var iso=rs.match(/^(\d{4})-(\d{2})-(\d{2})T/);
+      if(iso)return iso[1]+'-'+iso[2]+'-'+iso[3];
+      if(rs.match(/^\d{4}-\d{2}-\d{2}$/))return rs;
+      var n=parseFloat(rs);
+      if(!isNaN(n)&&n>40000&&n<60000){var ms=Math.round((n-25569)*86400000);var d=new Date(ms);return d.getUTCFullYear()+'-'+String(d.getUTCMonth()+1).padStart(2,'0')+'-'+String(d.getUTCDate()).padStart(2,'0')}
+    }
+    if(fmtVal){var s=String(fmtVal).trim();if(s.match(/^\d{4}-\d{2}-\d{2}$/))return s;var mdy=s.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2,4})$/);if(mdy){var mo=parseInt(mdy[1]),dy=parseInt(mdy[2]),yr=parseInt(mdy[3]);if(yr<100)yr+=2000;return yr+'-'+String(mo).padStart(2,'0')+'-'+String(dy).padStart(2,'0')}}
+    return null;
+  }
+  scheduleData=[];
+  teamCols.forEach(function(tc){
+    var entries=[];
+    for(var ri=hRow+1;ri<jsonFmt.length;ri++){
+      var v=String(jsonFmt[ri][tc.idx]||'').trim().toUpperCase();
+      if(v!=='D1'&&v!=='N1')continue;
+      var ds=parseDate(jsonRaw[ri]?jsonRaw[ri][dateColIdx]:null,jsonFmt[ri][dateColIdx]);
+      if(ds)entries.push({date:ds,type:v==='D1'?'day':'night'});
+    }
+    scheduleData.push({team:tc.team,entries:entries});
+  });
+  saveSched();
+  var total=scheduleData.reduce(function(s,t){return s+t.entries.length},0);
+  toast('Schedule: '+total+' shifts, '+scheduleData.length+' teams',3000);
+  check60h();
+}
+function renderSheet(){
+  if(!wb)return;
+  var sn=wb.SheetNames[0];
+  var ws=wb.Sheets[sn];
+  var json=XLSX.utils.sheet_to_json(ws,{header:1,defval:'',raw:false,dateNF:'YYYY-MM-DD'});
+  var hRow=0;for(var i=0;i<Math.min(json.length,10);i++){if(json[i].some(function(c){return String(c).toLowerCase()==='date'})){hRow=i;break}}
+  var headers=json[hRow],dataRows=json.slice(hRow+1);
+  var thHTML=headers.map(function(h){return'<th>'+String(h||'')+'</th>'}).join('');
+  function getCellCls(v){var s=String(v||'').trim().toUpperCase();return s==='D1'?'cD1':s==='N1'?'cN1':(s==='HOL'?'cHOL':'')}
+  var filtered=dataRows.filter(function(r){return r.some(function(c){return c!==''})});
+  var tbHTML=filtered.map(function(r){return'<tr>'+headers.map(function(_,ci){var val=r[ci]!==undefined?r[ci]:'',cls=ci>=2?getCellCls(val):'';return'<td'+(cls?' class="'+cls+'"':'')+'>'+val+'</td>'}).join('')+'</tr>'}).join('');
+  document.getElementById('schedcont').innerHTML='<div style="font-size:11px;color:var(--txt2);margin-bottom:7px">'+sn+' · '+filtered.length+' rows</div><div class="stblw" style="overflow-x:auto;border-radius:9px;border:1px solid var(--brd)"><table style="border-collapse:collapse;font-size:11px"><thead style="background:var(--sur2)"><tr>'+thHTML+'</tr></thead><tbody>'+tbHTML+'</tbody></table></div>';
+}
+function clrSched(){wb=null;scheduleData=null;localStorage.removeItem('lo_sched');document.getElementById('schedcont').innerHTML='<div class="empty">Load Excel schedule file.</div>';document.getElementById('xfile').value='';check60h();toast('Schedule cleared')}
+
+// EXPORT/IMPORT
+function exportData(){
+  var d=new Date().toISOString().slice(0,10),fn='LO_'+d+'.json';
+  var payload={v:1,workers:D.w,shifts:D.s};
+  if(scheduleData&&scheduleData.length)payload.schedule=scheduleData;
+  var blob=new Blob([JSON.stringify(payload)],{type:'application/json'});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement('a');a.href=url;a.download=fn;document.body.appendChild(a);a.click();
+  setTimeout(function(){document.body.removeChild(a);URL.revokeObjectURL(url)},200);
+  toast('Saved: '+fn,3000);
+}
+function triggerImport(){document.getElementById('importFile').click()}
+function importData(inp){
+  var file=inp.files[0];if(!file)return;
+  var r=new FileReader();
+  r.onload=function(ev){
+    try{
+      var p=JSON.parse(ev.target.result);
+      if(!Array.isArray(p.workers))throw new Error('Bad format');
+      if(!confirm('Load '+p.workers.length+' workers, '+(p.shifts||[]).length+' shifts?'))return;
+      D.w=p.workers;D.s=p.shifts||[];
+      D.w.forEach(function(w){if(!w.skills)w.skills=[];if(w.rate===undefined)w.rate=0;if(!w.line)w.line='';});
+      if(p.schedule&&p.schedule.length){scheduleData=p.schedule;saveSched()}
+      save();fillPS('psel');fillPS('ssel');fillPS('dpsel');
+      renderWorkers();fillWS();fillSFW();renderShifts();renderWP();updatePPill();check60h();
+      toast('Loaded: '+p.workers.length+' workers',3000);
+    }catch(e){toast('Error: '+e.message)}
+    inp.value='';
+  };r.readAsText(file);
+}
+
+// PROFILE
+function openProf(wid){
+  curProfId=wid;var w=D.w.find(function(x){return x.id===wid});if(!w)return;
+  var av=document.getElementById('profAvt');av.textContent=inits(w.name);av.className='avt '+avtCls(w.line);av.style.width='48px';av.style.height='48px';av.style.fontSize='17px';
+  document.getElementById('profName').textContent=w.name;
+  document.getElementById('profRateInput').value=w.rate>0?w.rate:'';
+  var sr=document.getElementById('profSkillsRow');
+  sr.innerHTML=ALL_SKILLS.map(function(s){var has=(w.skills||[]).indexOf(s)>=0;return'<button class="skill-btn'+(has?' on':'')+'" data-skill="'+s+'" onclick="togProfSkill(this)">'+(SKILL_LABELS[s]||s)+'</button>'}).join('');
+  var all=D.s.filter(function(e){return e.wid===wid});
+  var totH=all.reduce(function(s,e){return s+e.h},0),totE=all.filter(function(e){return e.earned>0}).reduce(function(s,e){return s+e.earned},0);
+  document.getElementById('profSub').innerHTML=(w.line?'<span class="badge '+lineBadgeCls(w.line)+'">'+lineIcon(w.line)+' '+w.line+'</span> ':'')+'<span style="color:var(--txt2)">'+all.length+' shifts</span>';
+  document.getElementById('profStats').innerHTML='<div class="pstat"><div class="pstat-n" style="color:var(--wine)">'+all.length+'</div><div class="pstat-l">Shifts</div></div><div class="pstat"><div class="pstat-n" style="color:#85b7eb">'+totH.toFixed(1)+'h</div><div class="pstat-l">Hours</div></div><div class="pstat"><div class="pstat-n" style="color:var(--gold)">'+(totE>0?'£'+totE.toFixed(0):'—')+'</div><div class="pstat-l">Earned</div></div>';
+  var ps=allP(),sel=document.getElementById('profPSel');
+  sel.innerHTML='<option value="ALL">All periods</option>'+ps.map(function(p){return'<option value="'+p+'">'+pLbl(p)+'</option>'}).join('');
+  renderProfShifts();
+  document.getElementById('profOv').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function togProfSkill(btn){var w=D.w.find(function(x){return x.id===curProfId});if(!w)return;if(!w.skills)w.skills=[];var s=btn.dataset.skill,idx=w.skills.indexOf(s);if(idx>=0){w.skills.splice(idx,1);btn.classList.remove('on')}else{w.skills.push(s);btn.classList.add('on')}save();renderWorkers();renderWP();toast('Skills updated')}
+function closeProfEv(e){if(e.target===document.getElementById('profOv'))closeProf()}
+function closeProf(){document.getElementById('profOv').classList.remove('open');document.body.style.overflow=''}
+function renderProfShifts(){
+  var wid=curProfId;if(!wid)return;
+  var period=document.getElementById('profPSel').value;
+  var entries=D.s.filter(function(e){return e.wid===wid&&(period==='ALL'||e.period===period)}).sort(function(a,b){return b.date.localeCompare(a.date)});
+  var el=document.getElementById('profShifts');
+  if(!entries.length){el.innerHTML='<div class="empty" style="padding:18px">No shifts.</div>';return}
+  var totH=entries.reduce(function(s,e){return s+e.h},0),totE=entries.filter(function(e){return e.earned>0}).reduce(function(s,e){return s+e.earned},0);
+  var summ=(totE>0?'<div style="background:var(--gold2);border:1px solid var(--gold);border-radius:var(--rs);padding:9px 13px;margin-bottom:12px;display:flex;align-items:center;gap:8px"><span style="font-size:11px;color:var(--txt2)">Total:</span><span style="font-family:\'Syne\',sans-serif;font-size:19px;font-weight:800;color:var(--gold)">£'+totE.toFixed(2)+'</span><span style="color:var(--txt2);font-size:11px">'+entries.length+' sh. · '+totH.toFixed(1)+'h</span></div>':'');
+  var rows=entries.map(function(e){
+    var isD=e.type==='day',isH=e.hol,rcls=isH?'srow-hol':(isD?'srow-day':'srow-night');
+    var bcls=isH?'bhol':(isD?'sday':'snit'),btxt=isH?'🏖 Hol':(isD?'☀ Day':'☽ Night');
+    var dow=new Date(e.date).toLocaleDateString('en-GB',{weekday:'short'});
+    var lb=e.line?'<span class="badge '+lineBadgeCls(e.line)+'" style="font-size:9px">'+lineIcon(e.line)+' '+e.line+'</span>':'';
+    var stb=e.station?'<span class="badge bb" style="font-size:9px">'+e.station+'</span>':'';
+    return'<div class="srow '+rcls+'"><div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap"><span style="font-family:\'Syne\',sans-serif;font-weight:700">'+e.date+'</span><span style="font-size:11px;color:var(--txt2)">('+dow+')</span><span class="badge '+bcls+'">'+btxt+'</span>'+lb+stb+(e.earned>0?'<span style="margin-left:auto;font-weight:700;color:var(--gold)">£'+e.earned.toFixed(2)+'</span>':'<span style="margin-left:auto;font-size:11px;color:var(--txt3)">no rate</span>')+'<button class="btn btn-r" onclick="delShift(\''+e.id+'\')" style="padding:3px 7px;font-size:11px">🗑</button></div><div style="font-size:11px;color:var(--txt2);margin-top:4px;display:flex;gap:8px;flex-wrap:wrap"><span>'+e.start+'–'+e.end+'</span><span>'+e.h.toFixed(1)+'h</span>'+(e.rate>0?'<span>£'+e.rate.toFixed(2)+'/h</span>':'')+(e.note?'<span>📝 '+e.note+'</span>':'')+'</div></div>';
+  }).join('');
+  el.innerHTML=summ+rows;
+}
+
+// INIT
+applyTheme();
+var today=new Date().toISOString().slice(0,10);
+document.getElementById('otdate').value=today;
+document.getElementById('drawDate').value=today;
+document.getElementById('dailyDate').value=today;
+document.getElementById('checkDate').value=today;
+updatePPill();fillPS('psel');fillPS('ssel');fillPS('dpsel');
+renderWorkers();fillWS();fillSFW();renderShifts();renderWP();updDraw();
+if(scheduleData&&scheduleData.length){
+  var _tot=scheduleData.reduce(function(s,t){return s+t.entries.length},0);
+  document.getElementById('schedcont').innerHTML='<div style="padding:12px;background:var(--grn2);border:1px solid var(--grn);border-radius:9px;font-size:13px">✓ Schedule in memory: '+scheduleData.length+' teams, '+_tot+' shifts<br><span style="font-size:11px;color:var(--txt2)">Load a new file to update, or Clear to remove.</span></div>';
+}else{
+  document.getElementById('schedcont').innerHTML='<div class="empty">Load Excel schedule file.</div>';
+}
+check60h();
+</script>
+</body></html>
